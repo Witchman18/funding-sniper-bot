@@ -18,9 +18,14 @@ def get_top_funding_pairs(min_rate=0.00005, top_n=5):
         top = []
         for s in symbols:
             symbol = s["symbol"]
-            rate = float(s.get("fundingRate", 0))
-            if abs(rate) >= min_rate:
-                top.append((symbol, rate))
+            raw_rate = s.get("fundingRate")
+            try:
+                rate = float(raw_rate)
+                if abs(rate) >= min_rate:
+                    top.append((symbol, rate))
+            except (TypeError, ValueError):
+                # fundingRate = None или '' — пропускаем
+                continue
 
         top.sort(key=lambda x: abs(x[1]), reverse=True)
 
@@ -35,4 +40,4 @@ if __name__ == "__main__":
     while True:
         print("🔁 Получаю лучшие пары по funding...\n")
         get_top_funding_pairs()
-        time.sleep(300) 
+        time.sleep(300)
