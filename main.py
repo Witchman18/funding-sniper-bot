@@ -11,39 +11,25 @@ session = HTTP(
     api_secret=os.getenv("BYBIT_API_SECRET")
 )
 
-def get_top_funding_pairs(min_rate=0.00005, top_n=5):
+# 👇 Добавляй сюда любые пары
+symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT"]
+
+def get_funding_rate(symbol):
     try:
-        response = session.get_tickers(category="linear")
-        symbols = response["result"]["list"]
-
-        top = []
-        for s in symbols:
-            symbol = s["symbol"]
-            raw_rate = s.get("fundingRate")
-            try:
-                rate = float(raw_rate)
-                if abs(rate) >= min_rate:
-                    top.append((symbol, rate))
-            except (TypeError, ValueError):
-                print(f"[!] Пропущено: {symbol} — fundingRate = {raw_rate}")
-                continue
-
-        top.sort(key=lambda x: abs(x[1]), reverse=True)
-
-        print(f"\n[{datetime.utcnow()}] 📊 Топ {top_n} активных пар по funding rate:\n")
-        for i, (symbol, rate) in enumerate(top[:top_n], 1):
-            print(f"{i}. {symbol} — Funding Rate: {rate:.8f}")
-        print("✅ Готово.\n")
-
+        result = session.get_funding_rate_history(
+            category="linear",
+            symbol=symbol,
+            limit=1
+        )
+        rate = float(result['result']['list'][0]['fundingRate'])
+        print(f"[{datetime.utcnow()}] {symbol} — Funding Rate: {rate}")
     except Exception as e:
-        print(f"[!] Ошибка при получении тикеров: {e}")
+        print(f"[{datetime.utcnow()}] Ошибка по {symbol}: {e}")
 
 if __name__ == "__main__":
     while True:
-        try:
-            print(f"\n🔁 [{datetime.utcnow()}] Получаю лучшие пары по funding...\n")
-            get_top_funding_pairs()
-            time.sleep(30)
-        except Exception as loop_error:
-            print(f"[X] Ошибка в основном цикле: {loop_error}")
-            time.sleep(30)
+        print(f"\n🔁 [{datetime.utcnow()}] Проверка ручных монет...\n")
+        for symbol in symbols:
+            get_funding_rate(symbol)
+        print("✅ Готово. Ждём 30 секунд...\n")
+        time.sleep(30)
