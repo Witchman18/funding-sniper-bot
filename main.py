@@ -22,7 +22,6 @@ def get_top_funding_pairs(min_rate=0.00005, top_n=5):
             if abs(rate) >= min_rate:
                 top.append((symbol, rate))
 
-        # Сортировка по убыванию доходности
         top.sort(key=lambda x: abs(x[1]), reverse=True)
 
         print(f"\n📊 Топ {top_n} активных пар по funding rate:\n")
@@ -36,4 +35,4 @@ if __name__ == "__main__":
     while True:
         print("🔁 Получаю лучшие пары по funding...\n")
         get_top_funding_pairs()
-        time.sleep(300)  # каждые 5 минут
+        time.sleep(300) 
