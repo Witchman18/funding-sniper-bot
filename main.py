@@ -10,19 +10,30 @@ session = HTTP(
     api_secret=os.getenv("BYBIT_API_SECRET")
 )
 
-def get_funding_rate(symbol="BTCUSDT"):
+def get_top_funding_pairs(min_rate=0.00005, top_n=5):
     try:
-        result = session.get_funding_rate_history(
-            category="linear",
-            symbol=symbol,
-            limit=1
-        )
-        rate = result['result']['list'][0]['fundingRate']
-        print(f"Funding rate for {symbol}: {rate}")
+        response = session.get_tickers(category="linear")
+        symbols = response["result"]["list"]
+
+        top = []
+        for s in symbols:
+            symbol = s["symbol"]
+            rate = float(s.get("fundingRate", 0))
+            if abs(rate) >= min_rate:
+                top.append((symbol, rate))
+
+        # Сортировка по убыванию доходности
+        top.sort(key=lambda x: abs(x[1]), reverse=True)
+
+        print(f"\n📊 Топ {top_n} активных пар по funding rate:\n")
+        for i, (symbol, rate) in enumerate(top[:top_n], 1):
+            print(f"{i}. {symbol} — Funding Rate: {rate:.8f}")
+        print("✅ Готово.\n")
     except Exception as e:
-        print(f"Error while fetching funding: {e}")
+        print(f"Ошибка при получении тикеров: {e}")
 
 if __name__ == "__main__":
     while True:
-        get_funding_rate("BTCUSDT")
-        time.sleep(300)  # Пауза 5 минут
+        print("🔁 Получаю лучшие пары по funding...\n")
+        get_top_funding_pairs()
+        time.sleep(300)  # каждые 5 минут
