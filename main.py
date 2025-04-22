@@ -35,7 +35,7 @@ def get_top_funding_pairs():
 
         print(f"\n📊 [{datetime.now(timezone.utc)}] Топ {min(5, len(relevant))} пар по funding rate ≥ {min_rate}:\n")
         for i, (s, r) in enumerate(relevant[:5], 1):
-            print(f"{i}. {s} — Funding Rate: {r:.8f}")
+            print(f"{i}. {s} — Funding Rate: {r * 100:.6f}%")
         print("✅ Готово.\n")
 
     except Exception as e:
