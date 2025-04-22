@@ -40,4 +40,4 @@ if __name__ == "__main__":
     while True:
         print("🔁 Получаю лучшие пары по funding...\n")
         get_top_funding_pairs()
-        time.sleep(300)
+        time.sleep(30)
