@@ -11,7 +11,7 @@ session = HTTP(
     api_secret=os.getenv("BYBIT_API_SECRET")
 )
 
-# 👇 Добавляй сюда любые пары
+# 👇 Добавляй сюда любые пары вручную
 symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT"]
 
 def get_funding_rate(symbol):
